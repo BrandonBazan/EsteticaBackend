@@ -13,6 +13,7 @@ public class Producto {
     
     private String nombre;
     private Double precio;
+    private Double comision;
     private Integer stock;
 	public String getNombre() {
 		return nombre;
@@ -35,6 +36,13 @@ public class Producto {
 	public Long getId() {
 		return id;
 	}
+	public Double getComision() {
+		return comision;
+	}
+	public void setComision(Double comision) {
+		this.comision = comision;
+	}
+	
 
     // Getters y Setters
     

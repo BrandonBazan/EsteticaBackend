@@ -1,21 +1,21 @@
-package com.estetica.ventas.Dto;
+	package com.estetica.ventas.Dto;
 
 import java.time.LocalDate;
 import java.util.List;
 
 public class VentaDTO {
-    private Long trabajadorId;
+    //private Long trabajadorId;
     private Long cajeroId;     // Cajero que registra la venta
     private List<DetalleVentaDTO> detalles;
     private String tipoPago;
     private Double propina;
 	
-	public Long getTrabajadorId() {
-		return trabajadorId;
-	}
-	public void setTrabajadorId(Long trabajadorId) {
-		this.trabajadorId = trabajadorId;
-	}
+//	public Long getTrabajadorId() {
+//		return trabajadorId;
+//	}
+//	public void setTrabajadorId(Long trabajadorId) {
+//		this.trabajadorId = trabajadorId;
+//	}
 	public List<DetalleVentaDTO> getDetalles() {
 		return detalles;
 	}

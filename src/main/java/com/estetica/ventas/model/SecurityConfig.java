@@ -37,8 +37,13 @@ public class SecurityConfig {
                 .requestMatchers("/trabajadores").permitAll()
                 .requestMatchers("/servicios").permitAll()
                 .requestMatchers("/productos").permitAll()
+                .requestMatchers("/api/resumen-dia").permitAll()
+                .requestMatchers("api/detalles-venta").permitAll()
+                .requestMatchers("/api/ventas-por-trabajador").permitAll()
+                .requestMatchers("api/resumen-totales").permitAll()
                 .requestMatchers("/ventas").permitAll()
-                .requestMatchers("/api/cajeros/register").hasRole("ADMIN") // Restringir a ADMIN
+                .requestMatchers("/api/cajeros/register").permitAll()
+                //.requestMatchers("/api/cajeros/register").hasRole("ADMIN") // Restringir a ADMIN
                 .anyRequest().authenticated() // Proteger el resto de endpoints
                 .and()
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

@@ -30,25 +30,28 @@ public class AuthController {
         String username = loginData.get("username");
         String password = loginData.get("password");
 
-        // Autenticación
+        // Autenticar al usuario
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(username, password)
         );
 
-        // Generar el token
-        String token = jwtTokenProvider.generateToken(authentication);
-
-        // Obtener el nombre del usuario desde el objeto Authentication
+        // Extraer detalles del usuario desde el objeto Authentication
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String userName = userDetails.getUsername();  // O cualquier otro detalle que necesites
-        
-        
-        // Crear la respuesta con el token y los detalles del usuario
+
+        // Asumimos que `Cajero` implementa `UserDetails` y tiene un método para obtener el ID
+        Long cajeroId = ((Cajero) userDetails).getCajeroId(); // Asegúrate de que `Cajero` tenga este método
+
+        // Generar el token JWT
+        String token = jwtTokenProvider.generateToken(userDetails, cajeroId);
+
+        // Crear la respuesta con el token y detalles del usuario
         Map<String, Object> response = new HashMap<>();
         response.put("token", token);
-        response.put("usuario", userName);  // Incluimos el nombre del usuario (cajero)
+        response.put("usuario", userDetails.getUsername());
+        response.put("cajeroId", cajeroId); // Opcional, incluir el ID en la respuesta
 
         return response;
     }
+
 
 }

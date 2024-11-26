@@ -13,12 +13,14 @@ import org.springframework.stereotype.Service;
 
 import com.estetica.ventas.Dto.DetalleVentaDTO;
 import com.estetica.ventas.Dto.VentaDTO;
+import com.estetica.ventas.model.Cajero;
 import com.estetica.ventas.model.DetalleVenta;
 import com.estetica.ventas.model.Producto;
 import com.estetica.ventas.model.Servicio;
 import com.estetica.ventas.model.Trabajador;
 import com.estetica.ventas.model.Venta;
 import com.estetica.ventas.model.Venta.TipoPago;
+import com.estetica.ventas.repository.CajeroRepository;
 import com.estetica.ventas.repository.DetalleVentaRepository;
 import com.estetica.ventas.repository.ProductoRepository;
 import com.estetica.ventas.repository.ServicioRepository;
@@ -42,6 +44,12 @@ public class VentaService {
 
     @Autowired
     private DetalleVentaRepository detalleVentaRepository;
+    
+    @Autowired
+    private CajeroRepository cajeroRepository ;
+    
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
 
     public List<Venta> listarVentas() {
         return ventaRepository.findAll();
@@ -63,10 +71,16 @@ public class VentaService {
             throw new IllegalArgumentException("Tipo de pago inválido. Valores permitidos: EFECTIVO, TARJETA, TRANSFERENCIA, OTRO.");
         }
 
-        // Asignar el trabajador que registró la venta
-        Trabajador trabajadorRegistrador = trabajadorRepository.findById(ventaDTO.getTrabajadorId())
-                .orElseThrow(() -> new IllegalArgumentException("Trabajador no encontrado con ID: " + ventaDTO.getTrabajadorId()));
-        venta.setTrabajador(trabajadorRegistrador);
+        // Asignar el cajero que registró la venta
+//        Long cajeroId = jwtTokenProvider.getCajeroIdFromJWT(token);
+//        Cajero cajeroRegistrador = cajeroRepository.findById(cajeroId)
+//                .orElseThrow(() -> new IllegalArgumentException("Cajero no encontrado."));
+//        venta.setCajero(cajeroRegistrador);
+        
+     // Asignar el cajero que registró la venta
+        Cajero cajero = cajeroRepository.findById(ventaDTO.getCajeroId())
+                .orElseThrow(() -> new IllegalArgumentException("Cajero no encontrado con ID: " + ventaDTO.getCajeroId()));
+        venta.setCajero(cajero);
 
         List<DetalleVenta> detalles = new ArrayList<>();
         double total = 0.0;
@@ -106,12 +120,12 @@ public class VentaService {
                 String categoria = detalle.getServicio().getCategoria();
                 String especialidad = detalle.getTrabajador().getEspecialidad();
                 if ("Color".equalsIgnoreCase(categoria) && "Estilista2".equalsIgnoreCase(especialidad)) {
-                    comision = (detalle.getSubtotal() - 110) * (trabajadorDetalle.getPorcentajeComision() / 100);
+                    comision = (detalle.getSubtotal() - detalle.getCantidad()*110) * (trabajadorDetalle.getPorcentajeComision() / 100);
                 } else {
-                    comision = (detalle.getSubtotal() - 10) * (trabajadorDetalle.getPorcentajeComision() / 100);
+                    comision = (detalle.getSubtotal() - detalle.getCantidad()*10) * (trabajadorDetalle.getPorcentajeComision() / 100);
                 }
             } else if (detalle.getProducto() != null) {
-                comision = detalle.getSubtotal() * 0.10;
+                comision = detalle.getProducto().getComision() * detalle.getCantidad();
             } else if (detalle.getNombrePersonalizado() != null) {
                 if (detalleDTO.getComisionPersonalizada() != null) {
                     comision = detalleDTO.getComisionPersonalizada();

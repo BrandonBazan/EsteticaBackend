@@ -28,9 +28,9 @@ public class Venta {
     @JoinColumn(name = "cajero_id", nullable = false) // Relación con Cajero
     private Cajero cajero;
     
-    @ManyToOne
-    @JoinColumn(name = "trabajador_id", nullable = false)
-    private Trabajador trabajador;
+//    @ManyToOne
+//    @JoinColumn(name = "trabajador_id", nullable = false)
+//    private Trabajador trabajador;
     
     private Double total;
     
@@ -48,13 +48,13 @@ public class Venta {
 		this.fecha = fecha;
 	}
 
-	public Trabajador getTrabajador() {
-		return trabajador;
-	}
-
-	public void setTrabajador(Trabajador trabajador) {
-		this.trabajador = trabajador;
-	}
+//	public Trabajador getTrabajador() {
+//		return trabajador;
+//	}
+//
+//	public void setTrabajador(Trabajador trabajador) {
+//		this.trabajador = trabajador;
+//	}
 
 	public Double getTotal() {
 		return total;
