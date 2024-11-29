@@ -22,6 +22,8 @@ import com.estetica.ventas.model.Venta;
 import com.estetica.ventas.model.Venta.TipoPago;
 import com.estetica.ventas.repository.CajeroRepository;
 import com.estetica.ventas.repository.DetalleVentaRepository;
+import com.estetica.ventas.repository.GastoRepository;
+import com.estetica.ventas.repository.PagoRepository;
 import com.estetica.ventas.repository.ProductoRepository;
 import com.estetica.ventas.repository.ServicioRepository;
 import com.estetica.ventas.repository.TrabajadorRepository;
@@ -47,6 +49,11 @@ public class VentaService {
     
     @Autowired
     private CajeroRepository cajeroRepository ;
+    @Autowired
+    private PagoRepository pagoRepository ;
+    
+    @Autowired
+    private GastoRepository gastoRepository ;
     
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
@@ -187,10 +194,11 @@ public class VentaService {
         for (Object[] fila : resultados) {
             Map<String, Object> detalle = new HashMap<>();
             detalle.put("id", fila[0]);
-            detalle.put("trabajadorNombre", fila[1]);
-            detalle.put("nombreProductoServicio", fila[2]);
-            detalle.put("subtotal", fila[3]);
-            detalle.put("comision", fila[4]);
+            detalle.put("trabajadorId", fila[1]);
+            detalle.put("trabajadorNombre", fila[2]);
+            detalle.put("nombreProductoServicio", fila[3]);
+            detalle.put("subtotal", fila[4]);
+            detalle.put("comision", fila[5]);
             detalles.add(detalle);
         }
 
@@ -215,18 +223,45 @@ public class VentaService {
     }
     
     public Map<String, Double> obtenerResumenTotales() {
+        // Obtener los datos desde los repositorios
         Double totalEfectivo = ventaRepository.obtenerTotalVentasEfectivoHoy();
         Double totalTarjeta = ventaRepository.obtenerTotalVentasTarjetaHoy();
         Double totalPropinas = ventaRepository.sumPropinasHoy();
+        Double totalPagosEfectivo = pagoRepository.obtenerSumaMontoPorFormaPago("Efectivo");
+        Double totalPagosTransferencia = pagoRepository.obtenerSumaMontoPorFormaPago("Transferencia");
+        Double totalGastos = gastoRepository.obtenerSumaGastos();
 
         // Manejar valores nulos
         totalEfectivo = totalEfectivo != null ? totalEfectivo : 0.0;
         totalTarjeta = totalTarjeta != null ? totalTarjeta : 0.0;
         totalPropinas = totalPropinas != null ? totalPropinas : 0.0;
+        totalPagosEfectivo = totalPagosEfectivo != null ? totalPagosEfectivo : 0.0;
+        totalPagosTransferencia = totalPagosTransferencia != null ? totalPagosTransferencia : 0.0;
+        totalGastos = totalGastos != null ? totalGastos : 0.0;
 
+        // Calcular sobrantes
+        Double sobranteEfectivo = totalEfectivo - totalPagosEfectivo - totalGastos;
+        Double sobranteTarjeta = totalTarjeta*.96 - totalPagosTransferencia;
+
+        // Construir el resumen
         Map<String, Double> resumen = new HashMap<>();
         resumen.put("totalEfectivo", totalEfectivo - totalPropinas); // Propinas descontadas de efectivo
         resumen.put("totalTarjeta", totalTarjeta + totalPropinas);  // Propinas sumadas a tarjeta
+        resumen.put("totalPagosEfectivo", totalPagosEfectivo);
+        resumen.put("totalPagosTransferencia", totalPagosTransferencia);
+        resumen.put("totalGastos", totalGastos);
+        resumen.put("sobranteEfectivo", sobranteEfectivo);
+        resumen.put("sobranteTarjeta", sobranteTarjeta);
+
+        // Imprimir para depuración
+        System.out.println("Total Efectivo: " + totalEfectivo);
+        System.out.println("Total Tarjeta: " + totalTarjeta);
+        System.out.println("Total Propinas: " + totalPropinas);
+        System.out.println("Total Pagos Efectivo: " + totalPagosEfectivo);
+        System.out.println("Total Pagos Transferencia: " + totalPagosTransferencia);
+        System.out.println("Total Gastos: " + totalGastos);
+        System.out.println("Sobrante Efectivo: " + sobranteEfectivo);
+        System.out.println("Sobrante Tarjeta: " + sobranteTarjeta);
 
         return resumen;
     }

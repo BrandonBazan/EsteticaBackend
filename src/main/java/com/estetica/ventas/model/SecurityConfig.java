@@ -42,6 +42,12 @@ public class SecurityConfig {
                 .requestMatchers("/api/ventas-por-trabajador").permitAll()
                 .requestMatchers("api/resumen-totales").permitAll()
                 .requestMatchers("/ventas").permitAll()
+                .requestMatchers("/api/pagos").permitAll()
+                .requestMatchers("/api/pagos/total-pagos").permitAll()
+                .requestMatchers("/api/pagos/trabajador/{trabajadorId}").permitAll()
+                .requestMatchers("/api/gastos/dia").permitAll()
+                .requestMatchers("/api/gastos").permitAll()
+                .requestMatchers("/api/gastos/total-gastos").permitAll()
                 .requestMatchers("/api/cajeros/register").permitAll()
                 //.requestMatchers("/api/cajeros/register").hasRole("ADMIN") // Restringir a ADMIN
                 .anyRequest().authenticated() // Proteger el resto de endpoints

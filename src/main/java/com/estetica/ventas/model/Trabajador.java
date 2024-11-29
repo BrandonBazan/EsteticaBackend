@@ -1,9 +1,13 @@
 package com.estetica.ventas.model;
 
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 
 @Entity
 public class Trabajador {
@@ -17,6 +21,10 @@ public class Trabajador {
     // Nuevo campo para especialidad
     private String especialidad;
 
+ // Relación bidireccional con Pagos
+    @OneToMany(mappedBy = "trabajador", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Pago> pagos;
+    
 	public String getNombre() {
 		return nombre;
 	}

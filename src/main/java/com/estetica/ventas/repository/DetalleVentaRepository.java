@@ -44,7 +44,8 @@ public interface DetalleVentaRepository extends JpaRepository<DetalleVenta, Long
     
     //Mostrar todos los Detalles
     	@Query(value = "SELECT " +
-                "    dv.id, " +
+                "    dv.id, "+
+                "    t.id, " +
                 "    t.nombre AS trabajador_nombre, " +
                 "    CASE " +
                 "        WHEN p.nombre IS NOT NULL THEN p.nombre " +
